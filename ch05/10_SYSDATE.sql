@@ -64,4 +64,49 @@ SELECT sysdate 오늘
      , ROUND(TO_DATE('2025-05-12') - TO_DATE('2024-10-31'))
           AS "(수료->개강) 일수" -- 양수로 일수 조회
    FROM dual; 
+   
+-- 10.6 사원 테이블에서 사원 ID, 입사일, T_입사일, R_입사일, R_근무개월수, T_근무개월수를 구한다. 
+-- MONTHS_BETWEEN : 현재 날짜와 입사일 간의 개월 수 구하기 
+-- 입사일 오름차순 
+SELECT employee_id "사원 ID"
+     , hire_date 입사일 
+     , ROUND(hire_date, 'MONTH') "R_입사일"  -- 16일을 기준으로 달을 반올림한다. 
+     , TRUNC(hire_date, 'MONTH') "T_입사일"  -- 현재 달의 01일로 조회 (버림)
+     , ROUND(MONTHS_BETWEEN(sysdate, hire_date), 0) AS "R_근무개월수" 
+     , TRUNC(MONTHS_BETWEEN(sysdate, hire_date), 0) AS "T_근무개월수"
+  FROM employees
+ WHERE SUBSTR(hire_date, 1, 2) IN (01, 03)  -- hire_date 1~2번 요소 추출(01년도와 03년도) 
+ORDER BY hire_date;
+
+-- // ADD_MONTHS //
+-- : N 개월 이후 날짜를 더하는 함수
+-- * 문법 : ADD_MONTHS(날짜, 더할 개월 수) / ADD_MONTHS(date, number)
+-- 10-7. 현재 날짜부터 3개월 이후의 날짜를 확인 
+SELECT sysdate 오늘
+     , ADD_MONTHS(sysdate, 3) "3개월 후"
+  FROM dual; 
+  
+-- // 10-8. NEXT_DAY  //
+-- : 돌아오는 요일의 날짜를 반환(해당 날짜를 기준으로 최초로 도래하는 요일에 해당되는 날짜 반환)
+-- * 문법 : NEXT_DAY([날짜 데이터], [요일문자])
+-- 요일 대신 숫자가 올 수 있다.  1:일요일, 2:월요일 3: 화요일 ....
+SELECT sysdate 오늘_일요일
+     , NEXT_DAY(sysdate, '일요일') "가장 가까운 일요일"  -- 오늘 일요일이라서 7일 뒤 반환
+     , NEXT_DAY(sysdate, 2) "가장 가까운 월요일"  -- 오늘 일요일이라서 1일 뒤 반환
+     , NEXT_DAY(sysdate, 3) "가장 가까운 화요일"  -- 오늘 일요일이라서 2일 뒤 반환
+     , NEXT_DAY(sysdate, 6) "가장 가까운 금요일"  -- 오늘 금요일이라서 5일 뒤 반환
+  FROM dual; 
+
+-- // LAST_DAY //
+-- : 달의 마지막 날 반환
+-- * 문법 : LAST_DAY(날짜 데이터)
+-- 10-9. 사원 테이블에서 사원ID, 입사일, 입사한 달의 마지막 날 조회 
+SELECT employee_id 사원ID
+     , hire_date 입사일
+     , LAST_DAY(hire_date) "입사한 달_LAST"
+  FROM employees
+ WHERE SUBSTR(hire_date, 1, 2) IN (01, 03)
+ORDER BY hire_date ASC;
+ 
+  
  
