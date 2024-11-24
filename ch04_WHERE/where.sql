@@ -62,7 +62,6 @@ SELECT employee_id "사원 ID"
 -- // 3. IN 연산자 //
 -- : 특정 컬럼의 값이 A,B,C 중에 하나라도 일치하면 참이 되는 연산자이다. => 중요
 -- * 문법 : 컬럼값 IN(A,B,C)  
---         컬럼값 NOT IN(A,B,C)  
 
 -- 3-1. 사원테이블에서 사원ID, last_name, 부서ID로 조회
 -- 조건 : 부서ID가 70,90,100인
@@ -74,6 +73,9 @@ SELECT employee_id  "사원 ID"
  WHERE department_id IN (70, 90, 100)
 ORDER BY department_id ASC;   
 
+-- // NOT IN 연산자 //
+-- : 대상의 목록과 일치하는 데이터를 제외한 값들을 반환
+-- * 문법 : 컬럼값 NOT IN(A,B,C)  
 
 -- 3-2. 사원테이블에서 사원ID, last_name, 부서ID로 조회
 -- 조건 : 부서ID가 50, 70, 80, 90, 100가 아닌 (NOT IN)
@@ -155,7 +157,7 @@ SELECT job_id "직무 ID"
 -- 1. Unique (데이터가 중복되지 않아야 한다.) 
 -- 2. NOT NULL (필수) 
 
--- 6-1. 사원테이블에서 부서ID 조회 
+-- 6-1. 사원테이블에서 부서ID 조회 (IS NULL)
 -- 조건 : 부서ID가 null인 모든 행
 -- 정렬 : 부서ID(오름차순) 
 SELECT *
@@ -163,7 +165,7 @@ SELECT *
  WHERE department_id IS NULL
  ORDER BY department_id ASC;
 
--- 6-2. 사원테이블에서 부서ID 조회 
+-- 6-2. 사원테이블에서 부서ID 조회 (IS NOT NULL)
 -- 조건 : 부서ID가 null이 아닌 모든 행
 -- 정렬 : 부서ID(오름차순) 
 SELECT *
@@ -172,24 +174,27 @@ SELECT *
  ORDER BY department_id ASC;
 
 -- 6-3. 사원테이블의 employee_id, last_name, salary, salary*12+commission_pct AS 연봉, commission_pct 조회
--- 조건 : salary >= 10000, commission_pct이 null이 아닐 때
+-- 조건 : salary >= 10000, commission_pct이 null가 아닐 때
 SELECT employee_id "사원 ID"
      , last_name 이름
      , salary 급여
-     , salary*12+commission_pct  연봉
+     , salary*12-(salary*12)*commission_pct  연봉
      , commission_pct 수수료
   FROM employees
  WHERE salary>=10000 AND commission_pct IS NOT NULL;
  
 -- ////////////////////////////////////////////
--- 7. 합집합
--- UNION : 중복제거 후 합집합 / UNION ALL 중복허용 후 합집합 
--- ORDER BY는 문장의 맨끝
+-- // 7. 집합 연산자  //
 -- 합집합, 교집합, 차집합은 테이블간에 컬럼의 갯수와 자료형이 일치해야 한다. 
 -- 테이블명은 달라도 무관
 
--- 7-1. UNION : 중복 제거 - 30번부서의 사원 ID, 이름, 급여, 부서ID
-SELECT employee_id
+-- // UNION(합집합)
+--: 중복제거 후 합집합 / UNION ALL 중복허용 후 합집합 
+-- ORDER BY는 문장의 맨끝
+
+-- UNION : 중복 제거후 합집합
+-- 7-1. 30번부서의 사원 ID, 이름, 급여, 부서ID
+SELECT employee_id 
      , last_name
      , salary 
      , department_id
@@ -204,7 +209,8 @@ SELECT employee_id
  WHERE department_id = 30
 ORDER BY employee_id ASC;  -- 정렬은 문장의 맨 끝에 위치  
 
--- 7-2. UNION ALL : 중복허용 - 30번부서의 사원 ID, 이름, 급여, 부서ID
+-- UNION ALL : 중복허용 합집합 
+-- 7-2. 30번부서의 사원 ID, 이름, 급여, 부서ID
 SELECT employee_id
      , last_name
      , salary 
@@ -220,7 +226,8 @@ SELECT employee_id
  WHERE department_id = 30
 ORDER BY employee_id ASC;  -- 문장의 맨 끝에 위치  
 
--- 7-3. 차집합 : MINUS(EXCEPT) - 50번을 제외한 부서의 사원 ID, 이름, 급여, 부서 ID 
+-- 차집합 : MINUS(EXCEPT) 
+-- 7-3. 50번을 제외한 부서의 사원 ID, 이름, 급여, 부서 ID 
 -- 전체 사원 정보 MINUS 50번 부서의 사원 정보 
 SELECT employee_id
      , last_name
@@ -236,7 +243,8 @@ SELECT employee_id
  WHERE department_id = 50
 ORDER bY department_id ASC;
  
--- 7-4. 교집합(INTERSECT) : department_id 30번과 겹치는 부서의 사원 ID, 이름, 급여, 부서 ID 
+-- 교집합(INTERSECT)
+-- 7-4. department_id 30번과 겹치는 부서의 사원 ID, 이름, 급여, 부서 ID 
 -- 전체 사원 정보 INTERSECT 30번 부서의 사원 정보 
  SELECT employee_id
      , last_name
